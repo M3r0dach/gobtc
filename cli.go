@@ -6,14 +6,12 @@ import (
 	"os"
 )
 
-type CLI struct {
-	bc *BlockChain
-}
+type CLI struct{}
 
 func (cli *CLI) printUsage() {
 	fmt.Println("Usage:")
 	fmt.Println("  printchain - Print all the blocks of the blockchain")
-	fmt.Println("  addblock -data DATA - Add new block to the blockchain")
+	fmt.Println("  createblockchain -address AddRESS -  Create a blockchain and send genesis block reward to ADDRESS")
 }
 
 func (cli *CLI) validateArgs() bool {
@@ -29,13 +27,13 @@ func (cli *CLI) Run() {
 		cli.printUsage()
 		return
 	}
-	addBlockCmd := flag.NewFlagSet("addblock", flag.ExitOnError)
+	createBlockChainCmd := flag.NewFlagSet("createblockchain", flag.ExitOnError)
 	printChainCmd := flag.NewFlagSet("printchain", flag.ExitOnError)
-	addBlockData := addBlockCmd.String("data", "", "Block data")
+	createBlockChainAddress := createBlockChainCmd.String("address", "", "The address to send genesis block reward to")
 	var err error
 	switch os.Args[1] {
-	case "addblock":
-		err = addBlockCmd.Parse(os.Args[2:])
+	case "createblockchain":
+		err = createBlockChainCmd.Parse(os.Args[2:])
 	case "printchain":
 		err = printChainCmd.Parse(os.Args[2:])
 	default:
@@ -45,15 +43,17 @@ func (cli *CLI) Run() {
 	if err != nil {
 		panic(err)
 	}
-	if addBlockCmd.Parsed() {
-		if *addBlockData == "" {
-			addBlockCmd.Usage()
+	if createBlockChainCmd.Parsed() {
+		if *createBlockChainAddress == "" {
+			createBlockChainCmd.Usage()
 			return
 		}
-		cli.bc.AddBlock(*addBlockData)
+		//cli.bc.AddBlock(*addBlockData)
 		fmt.Println("Success!")
 	}
 	if printChainCmd.Parsed() {
-		cli.bc.Browse()
+		bc := NewBlockChain()
+		defer bc.db.Close()
+		bc.Browse()
 	}
 }
