@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"crypto/sha256"
 	"encoding/gob"
+	"encoding/hex"
 	"fmt"
 )
 
@@ -51,12 +52,12 @@ func (tx *Transaction) String() string {
 		fmt.Fprintf(&buff, "  Input %d:\n", i)
 		fmt.Fprintf(&buff, "    TXID:    %x\n", input.Txid)
 		fmt.Fprintf(&buff, "    Out:     %d\n", input.Vout)
-		fmt.Fprintf(&buff, "    Script:  %x\n", input.ScriptSig)
+		fmt.Fprintf(&buff, "    Script:  %s\n", input.ScriptSig)
 	}
 	for i, output := range tx.Vout {
 		fmt.Fprintf(&buff, "  Output %d:\n", i)
 		fmt.Fprintf(&buff, "    Value:  %d\n", output.Value)
-		fmt.Fprintf(&buff, "    Script: %x\n", output.ScriptPubKey)
+		fmt.Fprintf(&buff, "    Script: %s\n", output.ScriptPubKey)
 	}
 	return buff.String()
 }
@@ -75,6 +76,41 @@ func NewCoinbaseTX(to, data string) *Transaction {
 		[]TxInput{txin},
 		[]TxOutput{txout},
 	}
+	tx.ID = tx.Hash()
+	return &tx
+}
+
+func (in *TxInput) CanUnlockOutputWith(lockedData string) bool {
+	return in.ScriptSig == lockedData
+}
+
+func (out *TxOutput) CanBeUnlockedWith(unlockingData string) bool {
+	return out.ScriptPubKey == unlockingData
+}
+
+func NewUTXOTransaction(from, to string, amount int, bc *BlockChain) *Transaction {
+	var inputs []TxInput
+	var outputs []TxOutput
+
+	acc, validOutputs := bc.FindSpendableOutputs(from, amount)
+	if acc < amount {
+		panic("not enough balance")
+	}
+	for txid, outs := range validOutputs {
+		txID, err := hex.DecodeString(txid)
+		if err != nil {
+			panic(err)
+		}
+		for _, out := range outs {
+			input := TxInput{txID, out, from}
+			inputs = append(inputs, input)
+		}
+	}
+	outputs = append(outputs, TxOutput{amount, to})
+	if acc > amount {
+		outputs = append(outputs, TxOutput{acc - amount, from})
+	}
+	tx := Transaction{[]byte{}, inputs, outputs}
 	tx.ID = tx.Hash()
 	return &tx
 }
