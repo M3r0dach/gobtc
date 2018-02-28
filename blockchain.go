@@ -31,7 +31,7 @@ func (bc *BlockChain) MineBlock(transactions []*Transaction) {
 	var lastHash []byte
 	err := bc.db.View(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte(blocksBucket))
-		lastHash = b.Get([]byte("1"))
+		lastHash = b.Get([]byte("l"))
 		return nil
 	})
 	if err != nil {
@@ -139,7 +139,7 @@ func (bc *BlockChain) FindUnspentTransactions(address string) []Transaction {
 				}
 				if out.CanBeUnlockedWith(address) {
 					unspentTXs = append(unspentTXs, *tx) // tx mustn't append twice, so the out must be different
-					break                                //deadly important
+					//break                                //deadly important
 				}
 			}
 			if tx.IsCoinbase() == false {
