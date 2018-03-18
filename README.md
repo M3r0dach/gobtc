@@ -49,15 +49,15 @@
 * 原理:
     * 链式结构
 
-        timestamp | data | prevhash
-        - | :-: | -:
-        0 | Gryffindor| nil
-        1 | Ann | hash0
-        2 | Slytherin | hash1
-        3 | geaiu| hash2
-        4 | gagharh | hash3
-        ..|
-        n | egaga | hashn-1
+        |timestamp | data | prevhash
+        |- | :-: | -:
+        |0 | Gryffindor| nil
+        |1 | Ann | hash0
+        |2 | Slytherin | hash1
+        |3 | geaiu| hash2
+        |4 | gagharh | hash3
+        |..|
+        |n | egaga | hashn-1
         now
 
         修改数据必然导致接下来的整个链不同,分布式存储保证链不会被丢失
@@ -68,15 +68,15 @@
 
 * 原理
     * 结构
-        timestamp | data | prevhash|nonce
-        - | :-: | -:|-
-        0 | Gryffindor| nil|nonce0
-        1 | Ann | hash0|nonce1
-        2 | Slytherin | hash1|nonce2
-        3 | geaiu| hash2|nonce3
-        4 | gagharh | hash3|nonce4
-        ...|
-        n | egaga | hashn-1|noncen
+        |timestamp | data | prevhash|nonce
+        |- | :-: | -:|-
+        |0 | Gryffindor| nil|nonce0
+        |1 | Ann | hash0|nonce1
+        |2 | Slytherin | hash1|nonce2
+        |3 | geaiu| hash2|nonce3
+        |4 | gagharh | hash3|nonce4
+        |...|
+        |n | egaga | hashn-1|noncen
         now
     * 工作量证明使 区块的hash必须满足一定条件,使添加区块变得困难
     * 若不能超过50%的算力,则不能构造出比现有链更长的链
