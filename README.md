@@ -68,6 +68,7 @@
 
 * 原理
     * 结构
+
         |timestamp | data | prevhash|nonce
         |- | :-: | -:|-
         |0 | Gryffindor| nil|nonce0
@@ -78,6 +79,7 @@
         |...|
         |n | egaga | hashn-1|noncen
         |now
+
     * 工作量证明使 区块的hash必须满足一定条件,使添加区块变得困难
     * 若不能超过50%的算力,则不能构造出比现有链更长的链
     * 由此可使链链上的数据无法篡改
